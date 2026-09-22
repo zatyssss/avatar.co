@@ -1,386 +1,862 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
 
-  <title>Aira | Virtual Cabin Crew</title>
+  <title>Aira — Virtual Cabin Crew</title>
+
+  <meta
+    name="description"
+    content="Aira real-time virtual cabin crew powered by Anam and ElevenLabs."
+  />
 
   <style>
+
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f7f8fc;
+      --text: #17181c;
+      --muted: #70747d;
+      --border: rgba(0, 0, 0, 0.08);
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+      --success: #16834b;
+      --danger: #c63636;
     }
 
     html,
     body {
       width: 100%;
-      height: 100%;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        linear-gradient(
-          135deg,
-          #f5f7fa 0%,
-          #eef2f7 100%
-        );
+      height: 100vh;
+      margin: 0;
+      padding: 0;
       overflow: hidden;
     }
 
-    /* ===============================
-       MAIN APP
-    =============================== */
+    body {
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
 
-    .app {
-      width: 100%;
-      height: 100vh;
+      color: var(--text);
+
+      background:
+        radial-gradient(
+          circle at 20% 10%,
+          rgba(220, 225, 255, 0.55),
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at 85% 20%,
+          rgba(240, 220, 255, 0.42),
+          transparent 32%
+        ),
+        var(--bg);
+
       display: flex;
       flex-direction: column;
     }
 
-    /* ===============================
-       HEADER
-    =============================== */
+    button {
+      font: inherit;
+    }
 
-    .header {
-      height: 82px;
-      background: rgba(255,255,255,0.96);
+
+    /* =========================
+       HEADER
+    ========================== */
+
+    .topbar {
+      height: 56px;
+      flex-shrink: 0;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 40px;
-      border-bottom: 1px solid #e5e7eb;
-      z-index: 10;
+
+      padding: 0 24px;
+
+      z-index: 100;
+
+      background: rgba(247, 248, 252, 0.78);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
     }
 
-    .logo {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: #e21b22;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 10px;
+
       color: white;
-      font-size: 21px;
-      font-weight: bold;
+      background: #111;
+
+      font-size: 15px;
+      font-weight: 800;
+
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
 
-    .brand-text h1 {
-      font-size: 22px;
+    .brand-name {
+      font-size: 16px;
       font-weight: 700;
-      color: #111827;
     }
 
-    .brand-text p {
-      margin-top: 3px;
-      font-size: 13px;
-      color: #6b7280;
+    .brand-badge {
+      font-size: 11px;
+      color: #74777e;
+
+      padding: 3px 8px;
+
+      border-radius: 999px;
+
+      background: rgba(0, 0, 0, 0.05);
     }
 
-    .status {
+    .top-status {
       display: flex;
       align-items: center;
       gap: 8px;
+
+      color: var(--muted);
       font-size: 13px;
-      color: #4b5563;
     }
 
     .status-dot {
-      width: 9px;
-      height: 9px;
+      width: 8px;
+      height: 8px;
+
       border-radius: 50%;
-      background: #22c55e;
+
+      background: #b8bbc1;
+
+      transition: 0.25s ease;
     }
 
-    /* ===============================
-       CONTENT
-    =============================== */
+    .status-dot.connected {
+      background: var(--success);
 
-    .content {
+      box-shadow:
+        0 0 0 4px rgba(22, 131, 75, 0.12);
+    }
+
+    .status-dot.connecting {
+      background: #d58b20;
+      animation: pulse 1.2s infinite;
+    }
+
+    .status-dot.error {
+      background: var(--danger);
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.35;
+      }
+
+    }
+
+
+    /* =========================
+       MAIN
+    ========================== */
+
+    .page {
       flex: 1;
-      position: relative;
+
+      width: 100%;
+      max-width: 1080px;
+
+      margin: 0 auto;
+
+      padding: 12px 20px 16px;
+
       display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 25px;
+      flex-direction: column;
+      gap: 12px;
+
       min-height: 0;
     }
 
-    /* ===============================
-       AVATAR STAGE
-    =============================== */
-
-    .avatar-stage {
-      position: relative;
-      width: min(900px, 95vw);
-      height: min(680px, calc(100vh - 140px));
-      border-radius: 28px;
-      overflow: hidden;
-      background:
-        radial-gradient(
-          circle at center,
-          #ffffff 0%,
-          #eef2f7 70%,
-          #e5e7eb 100%
-        );
-
-      box-shadow:
-        0 25px 70px rgba(0,0,0,0.12);
-    }
-
-    /* ===============================
-       AVATAR PROVIDER CONTAINER
-    =============================== */
-
-    #avatar-container {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #avatar-video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: none;
-    }
-
-    /* Placeholder until avatar SDK is connected */
-
-    .avatar-placeholder {
+    .hero {
       text-align: center;
-      padding: 30px;
+      flex-shrink: 0;
     }
 
-    .avatar-circle {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      margin: 0 auto 25px;
+    .hero h1 {
+      margin: 0 0 2px;
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: clamp(22px, 3.2vw, 36px);
+      line-height: 1.1;
+
+      letter-spacing: -0.04em;
+
+      font-weight: 750;
+    }
+
+    .hero p {
+      margin: 0;
+
+      color: var(--muted);
+
+      font-size: 13px;
+    }
+
+
+    /* =========================
+       ASSISTANT
+    ========================== */
+
+    .assistant-shell {
+      position: relative;
+
+      flex: 1;
+
+      width: 100%;
+      min-height: 0;
+
+      padding: 6px;
+
+      border-radius: 24px;
 
       background:
         linear-gradient(
-          135deg,
-          #ffffff,
-          #dfe5ec
+          145deg,
+          rgba(255,255,255,0.95),
+          rgba(255,255,255,0.68)
         );
 
-      box-shadow:
-        0 15px 40px rgba(0,0,0,0.12);
+      border: 1px solid rgba(255,255,255,0.9);
 
-      font-size: 70px;
+      box-shadow: var(--shadow);
+
+      display: flex;
+      flex-direction: column;
     }
 
-    .avatar-placeholder h2 {
-      color: #111827;
-      font-size: 30px;
-      margin-bottom: 10px;
+    .assistant {
+      position: relative;
+
+      flex: 1;
+
+      width: 100%;
+      min-height: 0;
+
+      overflow: hidden;
+
+      border-radius: 18px;
+
+      background:
+        radial-gradient(
+          circle at 50% 30%,
+          #ffffff,
+          #f0f2f6 58%,
+          #e8ebf1 100%
+        );
     }
 
-    .avatar-placeholder p {
-      color: #6b7280;
-      font-size: 15px;
-      line-height: 1.6;
+    .avatar-stage {
+      position: relative;
+
+      width: 100%;
+      height: 100%;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* ===============================
-       NAME CARD
-    =============================== */
 
-    .name-card {
+    /* =========================
+       ANAM AVATAR
+    ========================== */
+
+    #avatar-video {
       position: absolute;
-      left: 25px;
-      bottom: 25px;
 
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(10px);
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+
+      background: transparent;
+
+      opacity: 0;
+
+      transition: opacity 0.5s ease;
+
+      transform: scale(1.01);
+    }
+
+    #avatar-video.active {
+      opacity: 1;
+    }
+
+
+    /* =========================
+       IDLE
+    ========================== */
+
+    .idle-state {
+      position: absolute;
+
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 20px;
+
+      text-align: center;
+
+      transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease;
+    }
+
+    .idle-state.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .idle-inner {
+      max-width: 380px;
+    }
+
+    .idle-icon {
+      width: 56px;
+      height: 56px;
+
+      margin: 0 auto 12px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 18px;
+
+      background: #111;
+
+      color: white;
+
+      font-size: 22px;
+
+      box-shadow:
+        0 10px 25px rgba(0,0,0,0.14);
+    }
+
+    .idle-inner h2 {
+      margin: 0 0 6px;
+
+      font-size: 20px;
+    }
+
+    .idle-inner p {
+      margin: 0;
+
+      color: var(--muted);
+
+      line-height: 1.5;
+
+      font-size: 13px;
+    }
+
+
+    /* =========================
+       CONNECTING
+    ========================== */
+
+    .connecting-state {
+      position: absolute;
+
+      inset: 0;
+
+      display: none;
+
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+
+      z-index: 10;
+
+      background:
+        rgba(247,248,252,0.82);
+
+      backdrop-filter: blur(8px);
+    }
+
+    .connecting-state.visible {
+      display: flex;
+    }
+
+    .loader {
+      width: 38px;
+      height: 38px;
+
+      margin: 0 auto 12px;
+
+      border-radius: 50%;
+
+      border:
+        3px solid rgba(0,0,0,0.08);
+
+      border-top-color: #111;
+
+      animation: spin 0.85s linear infinite;
+    }
+
+    @keyframes spin {
+
+      to {
+        transform: rotate(360deg);
+      }
+
+    }
+
+    .connecting-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .connecting-text {
+      margin-top: 4px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+    }
+
+
+    /* =========================
+       CONTROLS
+    ========================== */
+
+    .control-bar {
+      position: absolute;
+
+      left: 50%;
+      bottom: 16px;
+
+      transform: translateX(-50%);
+
+      z-index: 30;
+
+      display: flex;
+      align-items: center;
+
+      gap: 8px;
+
+      padding: 6px;
 
       border-radius: 16px;
-      padding: 14px 20px;
+
+      background:
+        rgba(255,255,255,0.88);
+
+      backdrop-filter: blur(20px);
+
+      border:
+        1px solid rgba(255,255,255,0.9);
 
       box-shadow:
-        0 10px 30px rgba(0,0,0,0.12);
-
-      z-index: 5;
+        0 12px 30px rgba(0,0,0,0.12);
     }
 
-    .name-card h2 {
-      font-size: 20px;
-      color: #111827;
-    }
+    .btn {
+      height: 38px;
 
-    .name-card p {
-      margin-top: 3px;
+      padding: 0 16px;
+
+      border: 0;
+
+      border-radius: 11px;
+
+      cursor: pointer;
+
+      font-weight: 650;
       font-size: 13px;
-      color: #6b7280;
     }
 
-    /* ===============================
-       ELEVENLABS
-    =============================== */
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .btn-start {
+      background: #111;
+      color: white;
+    }
+
+    .btn-stop {
+      background: #f1f2f4;
+      color: #25262a;
+    }
+
+    .mic-status {
+      display: none;
+
+      align-items: center;
+
+      gap: 6px;
+
+      padding: 0 8px;
+
+      color: #62666e;
+
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .mic-status.visible {
+      display: flex;
+    }
+
+    .mic-wave {
+      display: flex;
+
+      align-items: center;
+
+      gap: 2px;
+
+      height: 16px;
+    }
+
+    .mic-wave span {
+      width: 3px;
+      height: 6px;
+
+      border-radius: 4px;
+
+      background: #222;
+
+      animation:
+        wave 0.8s ease-in-out infinite;
+    }
+
+    .mic-wave span:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .mic-wave span:nth-child(3) {
+      animation-delay: 0.2s;
+    }
+
+    .mic-wave span:nth-child(4) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes wave {
+
+      0%,
+      100% {
+        height: 4px;
+      }
+
+      50% {
+        height: 14px;
+      }
+
+    }
+
+
+    /* =========================
+       ERROR
+    ========================== */
+
+    .error-box {
+      display: none;
+
+      position: absolute;
+
+      left: 50%;
+      top: 16px;
+
+      transform: translateX(-50%);
+
+      width:
+        min(calc(100% - 32px), 540px);
+
+      z-index: 40;
+
+      padding: 10px 14px;
+
+      border-radius: 12px;
+
+      color: #8e2424;
+
+      background:
+        rgba(255,244,244,0.96);
+
+      border:
+        1px solid rgba(198,54,54,0.15);
+
+      font-size: 12px;
+    }
+
+    .error-box.visible {
+      display: block;
+    }
+
+
+    /* =========================
+       INFO
+    ========================== */
+
+    .info-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3,1fr);
+
+      gap: 10px;
+
+      flex-shrink: 0;
+    }
+
+    .info-card {
+      padding: 10px 12px;
+
+      border-radius: 14px;
+
+      background:
+        rgba(255,255,255,0.67);
+
+      border:
+        1px solid var(--border);
+
+      color: #676b73;
+
+      font-size: 11px;
+
+      line-height: 1.4;
+    }
+
+    .info-card strong {
+      display: block;
+
+      margin-bottom: 2px;
+
+      color: #25262a;
+
+      font-size: 12px;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================== */
+
+    footer {
+      flex-shrink: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      color: #888c94;
+
+      font-size: 11px;
+
+      padding-top: 2px;
+    }
+
+
+    /* =========================
+       ELEVENLABS WIDGET
+    ========================== */
 
     elevenlabs-convai {
       position: fixed;
-      right: 24px;
-      bottom: 24px;
+
+      right: 20px;
+      bottom: 20px;
+
       z-index: 9999;
     }
 
-    /* ===============================
+
+    /* =========================
        MOBILE
-    =============================== */
+    ========================== */
 
-    @media (max-width: 700px) {
+    @media (max-width:700px) {
 
-      .header {
-        height: 72px;
-        padding: 0 18px;
+      .topbar {
+        height: 48px;
+        padding: 0 16px;
       }
 
-      .brand-text h1 {
-        font-size: 18px;
-      }
-
-      .brand-text p {
-        font-size: 11px;
-      }
-
-      .status {
+      .brand-badge {
         display: none;
       }
 
-      .content {
-        padding: 12px;
+      .page {
+        padding: 10px 12px 12px;
+        gap: 8px;
       }
 
-      .avatar-stage {
-        width: 100%;
-        height: calc(100vh - 100px);
-        border-radius: 20px;
-      }
+      .control-bar {
+        width: calc(100% - 24px);
 
-      .name-card {
-        left: 15px;
-        bottom: 15px;
-      }
+        justify-content: center;
 
-      elevenlabs-convai {
-        right: 12px;
         bottom: 12px;
       }
+
+      .btn {
+        flex: 1;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
     }
 
   </style>
+
 </head>
 
 
 <body>
 
-  <div class="app">
 
-    <!-- ==================================
-         HEADER
-    =================================== -->
+<!-- ================================
+     HEADER
+================================ -->
 
-    <header class="header">
+<header class="topbar">
 
-      <div class="brand">
+  <div class="brand">
 
-        <div class="logo">
-          A
-        </div>
+    <div class="brand-mark">
+      A
+    </div>
 
-        <div class="brand-text">
+    <div class="brand-name">
+      Aira
+    </div>
 
-          <h1>Aira</h1>
+    <div class="brand-badge">
+      Virtual Cabin Crew
+    </div>
 
-          <p>
-            AirAsia Virtual Cabin Crew
-          </p>
-
-        </div>
-
-      </div>
+  </div>
 
 
-      <div class="status">
+  <div class="top-status">
 
-        <div class="status-dot"></div>
+    <span
+      id="statusDot"
+      class="status-dot">
+    </span>
 
-        Ready to assist
+    <span id="statusText">
+      Ready
+    </span>
 
-      </div>
+  </div>
 
-    </header>
+</header>
 
 
-    <!-- ==================================
-         AVATAR
-    =================================== -->
+<!-- ================================
+     MAIN
+================================ -->
 
-    <main class="content">
+<main class="page">
 
-      <section
-        class="avatar-stage"
-        id="avatar-stage"
-      >
+
+  <section class="hero">
+
+    <h1>
+      Welcome onboard
+    </h1>
+
+    <p>
+      Speak with Aira, your virtual cabin crew assistant.
+    </p>
+
+  </section>
+
+
+  <section class="assistant-shell">
+
+    <div class="assistant">
+
+      <div class="avatar-stage">
+
+
+        <!-- ==========================
+             ANAM AVATAR VIDEO
+        =========================== -->
+
+        <video
+          id="avatar-video"
+          autoplay
+          playsinline>
+        </video>
+
+
+        <!-- IDLE -->
 
         <div
-          id="avatar-container"
-          data-avatar-id="1f8f6a1f-9608-4ba3-a335-9d22ec4a36c7"
-        >
+          id="idleState"
+          class="idle-state">
 
-          <!--
-              LIVE AVATAR VIDEO
+          <div class="idle-inner">
 
-              Your avatar provider SDK should
-              attach its MediaStream here.
-          -->
-
-          <video
-            id="avatar-video"
-            autoplay
-            playsinline
-          ></video>
-
-
-          <!-- Temporary display -->
-
-          <div
-            class="avatar-placeholder"
-            id="avatar-placeholder"
-          >
-
-            <div class="avatar-circle">
-              👩‍✈️
+            <div class="idle-icon">
+              ✦
             </div>
 
-            <h2>Aira</h2>
+            <h2>
+              Aira is ready
+            </h2>
 
             <p>
-              Your Virtual Cabin Crew
+              Click
+              <strong>Start Conversation</strong>
+              and allow microphone access.
             </p>
 
           </div>
@@ -388,114 +864,1183 @@
         </div>
 
 
-        <div class="name-card">
+        <!-- CONNECTING -->
 
-          <h2>Aira</h2>
+        <div
+          id="connectingState"
+          class="connecting-state">
 
-          <p>
-            Virtual Cabin Crew
-          </p>
+          <div>
+
+            <div class="loader"></div>
+
+            <div class="connecting-title">
+              Connecting Aira
+            </div>
+
+            <div
+              id="connectingText"
+              class="connecting-text">
+
+              Creating a secure session…
+
+            </div>
+
+          </div>
 
         </div>
 
-      </section>
 
-    </main>
+        <!-- ERROR -->
 
-  </div>
-
-
-  <!-- ==================================
-       ELEVENLABS CONVERSATIONAL AI
-  =================================== -->
-
-  <elevenlabs-convai
-    agent-id="agent_4901kvey5tfhf0ab5xw9x5f3n5g7">
-  </elevenlabs-convai>
+        <div
+          id="errorBox"
+          class="error-box">
+        </div>
 
 
-  <script
-    src="https://unpkg.com/@elevenlabs/convai-widget-embed"
-    async
-    type="text/javascript">
-  </script>
+        <!-- CONTROLS -->
+
+        <div class="control-bar">
+
+          <button
+            id="startButton"
+            class="btn btn-start"
+            type="button">
+
+            Start Conversation
+
+          </button>
 
 
-  <!-- ==================================
-       AVATAR CONFIGURATION
-  =================================== -->
+          <button
+            id="stopButton"
+            class="btn btn-stop"
+            type="button"
+            disabled>
 
-  <script>
+            End Conversation
 
-    /*
-     * AIRA AVATAR CONFIG
-     *
-     * Do NOT put private API keys here.
-     */
+          </button>
 
-    const AVATAR_ID =
-      "1f8f6a1f-9608-4ba3-a335-9d22ec4a36c7";
 
-    const ELEVENLABS_AGENT_ID =
-      "agent_4901kvey5tfhf0ab5xw9x5f3n5g7";
+          <div
+            id="micStatus"
+            class="mic-status">
+
+            <div class="mic-wave">
+
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+
+            </div>
+
+            Listening
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================================
+       INFORMATION
+  ================================= -->
+
+  <section class="info-grid">
+
+    <div class="info-card">
+
+      <strong>
+        🎤 Voice interaction
+      </strong>
+
+      Speak naturally with Aira.
+
+    </div>
+
+
+    <div class="info-card">
+
+      <strong>
+        👄 Live avatar
+      </strong>
+
+      Your cabin crew avatar streams in real time.
+
+    </div>
+
+
+    <div class="info-card">
+
+      <strong>
+        ✈️ Passenger assistance
+      </strong>
+
+      Ask Aira about your onboard experience.
+
+    </div>
+
+  </section>
+
+
+  <footer>
+
+    <div>
+      Aira Virtual Cabin Crew
+    </div>
+
+    <div>
+      Secure session architecture
+    </div>
+
+  </footer>
+
+</main>
+
+
+
+<!-- ==================================================
+     ELEVENLABS WIDGET
+
+     NEW ELEVENLABS AGENT:
+     agent_4901kvey5tfhf0ab5xw9x5f3n5g7
+=================================================== -->
+
+<elevenlabs-convai
+  agent-id="agent_4901kvey5tfhf0ab5xw9x5f3n5g7">
+</elevenlabs-convai>
+
+
+<script
+  src="https://unpkg.com/@elevenlabs/convai-widget-embed"
+  async
+  type="text/javascript">
+</script>
+
+
+
+<!-- ==================================================
+     ANAM SDK
+=================================================== -->
+
+<script type="module">
+
+import {
+  createClient
+} from "https://esm.sh/@anam-ai/js-sdk@latest";
+
+
+/* ==================================================
+   CONFIGURATION
+=================================================== */
+
+/*
+ * Your existing secure Supabase endpoint.
+ */
+
+const SESSION_ENDPOINT =
+  "https://cfthqsvxidzxflbvhxkk.supabase.co/functions/v1/anam-eleven-session";
+
+
+/*
+ * NEW AVATAR ID
+ */
+
+const AVATAR_ID =
+  "1f8f6a1f-9608-4ba3-a335-9d22ec4a36c7";
+
+
+/*
+ * NEW ELEVENLABS AGENT ID
+ */
+
+const AGENT_ID =
+  "agent_4901kvey5tfhf0ab5xw9x5f3n5g7";
+
+
+/*
+ * IMPORTANT:
+ *
+ * DO NOT put your Anam API key here.
+ *
+ * GitHub Pages is public.
+ *
+ * The API key should remain inside your
+ * Supabase Edge Function.
+ */
+
+
+/* ==================================================
+   STATE
+=================================================== */
+
+let anamClient = null;
+
+let isStarting = false;
+
+let isConnected = false;
+
+
+/* ==================================================
+   ELEMENTS
+=================================================== */
+
+const video =
+  document.getElementById(
+    "avatar-video"
+  );
+
+
+const startButton =
+  document.getElementById(
+    "startButton"
+  );
+
+
+const stopButton =
+  document.getElementById(
+    "stopButton"
+  );
+
+
+const idleState =
+  document.getElementById(
+    "idleState"
+  );
+
+
+const connectingState =
+  document.getElementById(
+    "connectingState"
+  );
+
+
+const connectingText =
+  document.getElementById(
+    "connectingText"
+  );
+
+
+const errorBox =
+  document.getElementById(
+    "errorBox"
+  );
+
+
+const micStatus =
+  document.getElementById(
+    "micStatus"
+  );
+
+
+const statusText =
+  document.getElementById(
+    "statusText"
+  );
+
+
+const statusDot =
+  document.getElementById(
+    "statusDot"
+  );
+
+
+/* ==================================================
+   STATUS
+=================================================== */
+
+function setStatus(
+  text,
+  type = "idle"
+) {
+
+  statusText.textContent =
+    text;
+
+
+  statusDot.className =
+    "status-dot";
+
+
+  if (
+    type === "connected"
+  ) {
+
+    statusDot.classList.add(
+      "connected"
+    );
+
+  }
+
+
+  if (
+    type === "connecting"
+  ) {
+
+    statusDot.classList.add(
+      "connecting"
+    );
+
+  }
+
+
+  if (
+    type === "error"
+  ) {
+
+    statusDot.classList.add(
+      "error"
+    );
+
+  }
+
+}
+
+
+/* ==================================================
+   ERROR
+=================================================== */
+
+function showError(
+  message
+) {
+
+  console.error(
+    "Aira:",
+    message
+  );
+
+
+  errorBox.textContent =
+    message;
+
+
+  errorBox.classList.add(
+    "visible"
+  );
+
+
+  setStatus(
+    "Connection error",
+    "error"
+  );
+
+}
+
+
+function hideError() {
+
+  errorBox.textContent =
+    "";
+
+
+  errorBox.classList.remove(
+    "visible"
+  );
+
+}
+
+
+/* ==================================================
+   UI
+=================================================== */
+
+function setIdleUI() {
+
+  startButton.disabled =
+    false;
+
+
+  stopButton.disabled =
+    true;
+
+
+  idleState.classList.remove(
+    "hidden"
+  );
+
+
+  connectingState.classList.remove(
+    "visible"
+  );
+
+
+  micStatus.classList.remove(
+    "visible"
+  );
+
+
+  video.classList.remove(
+    "active"
+  );
+
+
+  setStatus(
+    "Ready",
+    "idle"
+  );
+
+}
+
+
+function setConnectingUI() {
+
+  startButton.disabled =
+    true;
+
+
+  stopButton.disabled =
+    true;
+
+
+  idleState.classList.add(
+    "hidden"
+  );
+
+
+  connectingState.classList.add(
+    "visible"
+  );
+
+
+  connectingText.textContent =
+    "Creating a secure session…";
+
+
+  setStatus(
+    "Connecting",
+    "connecting"
+  );
+
+}
+
+
+function setConnectedUI() {
+
+  startButton.disabled =
+    true;
+
+
+  stopButton.disabled =
+    false;
+
+
+  idleState.classList.add(
+    "hidden"
+  );
+
+
+  connectingState.classList.remove(
+    "visible"
+  );
+
+
+  video.classList.add(
+    "active"
+  );
+
+
+  micStatus.classList.add(
+    "visible"
+  );
+
+
+  setStatus(
+    "Connected",
+    "connected"
+  );
+
+}
+
+
+/* ==================================================
+   AVATAR AUDIO
+=================================================== */
+
+async function enableAvatarAudio() {
+
+  video.muted =
+    false;
+
+
+  video.defaultMuted =
+    false;
+
+
+  video.volume =
+    1.0;
+
+
+  try {
+
+    await video.play();
 
 
     console.log(
-      "Aira Avatar ID:",
-      AVATAR_ID
-    );
-
-    console.log(
-      "ElevenLabs Agent:",
-      ELEVENLABS_AGENT_ID
+      "Aira audio/video playback enabled."
     );
 
 
-    /*
-     * ===================================
-     * LIVE AVATAR CONNECTION
-     * ===================================
-     *
-     * The avatar provider's SDK/API
-     * needs to be connected here.
-     *
-     * Example:
-     *
-     * const session =
-     *   await avatarSDK.createSession({
-     *       avatarId: AVATAR_ID
-     *   });
-     *
-     * document
-     *   .getElementById("avatar-video")
-     *   .srcObject = session.stream;
-     *
-     */
+  } catch (
+    playbackError
+  ) {
 
 
-    function showAvatarVideo(stream) {
+    console.warn(
+      "Initial playback blocked:",
+      playbackError
+    );
 
-      const video =
-        document.getElementById(
-          "avatar-video"
-        );
 
-      const placeholder =
-        document.getElementById(
-          "avatar-placeholder"
-        );
+    try {
 
-      video.srcObject = stream;
+      video.muted =
+        false;
 
-      video.style.display =
-        "block";
 
-      placeholder.style.display =
-        "none";
+      video.volume =
+        1;
+
+
+      await video.play();
+
+
+    } catch (
+      secondError
+    ) {
+
+
+      console.warn(
+        "Second playback attempt failed:",
+        secondError
+      );
 
     }
 
-  </script>
+  }
+
+}
+
+
+/* ==================================================
+   DEBUG STREAM
+=================================================== */
+
+function debugMediaStream() {
+
+  const stream =
+    video.srcObject;
+
+
+  if (
+    !stream
+  ) {
+
+    console.warn(
+      "Aira video has no MediaStream."
+    );
+
+    return;
+
+  }
+
+
+  const audioTracks =
+    stream.getAudioTracks();
+
+
+  const videoTracks =
+    stream.getVideoTracks();
+
+
+  console.log(
+    "Aira audio tracks:",
+    audioTracks
+  );
+
+
+  console.log(
+    "Aira video tracks:",
+    videoTracks
+  );
+
+
+  audioTracks.forEach(
+    track => {
+
+      track.enabled =
+        true;
+
+    }
+  );
+
+}
+
+
+/* ==================================================
+   CREATE SECURE SESSION
+=================================================== */
+
+async function createSession() {
+
+  const response =
+    await fetch(
+      SESSION_ENDPOINT,
+      {
+
+        method:
+          "POST",
+
+
+        headers: {
+
+          "Content-Type":
+            "application/json"
+
+        },
+
+
+        body:
+          JSON.stringify(
+            {
+
+              avatarId:
+                AVATAR_ID,
+
+
+              agentId:
+                AGENT_ID
+
+            }
+          ),
+
+
+        cache:
+          "no-store"
+
+      }
+    );
+
+
+  let data = null;
+
+
+  try {
+
+    data =
+      await response.json();
+
+
+  } catch {
+
+    throw new Error(
+      `Session server returned HTTP ${response.status}.`
+    );
+
+  }
+
+
+  if (
+    !response.ok
+  ) {
+
+    throw new Error(
+      data?.details ||
+      data?.error ||
+      `HTTP ${response.status}`
+    );
+
+  }
+
+
+  if (
+    !data?.success
+  ) {
+
+    throw new Error(
+      data?.error ||
+      "Unable to create avatar session."
+    );
+
+  }
+
+
+  if (
+    !data?.sessionToken
+  ) {
+
+    throw new Error(
+      "Session server did not return an Anam session token."
+    );
+
+  }
+
+
+  return data.sessionToken;
+
+}
+
+
+/* ==================================================
+   START CONVERSATION
+=================================================== */
+
+async function startConversation() {
+
+  if (
+    isStarting ||
+    isConnected
+  ) {
+
+    return;
+
+  }
+
+
+  isStarting =
+    true;
+
+
+  hideError();
+
+
+  setConnectingUI();
+
+
+  try {
+
+
+    /*
+     * Enable browser audio following
+     * direct user interaction.
+     */
+
+    video.muted =
+      false;
+
+
+    video.defaultMuted =
+      false;
+
+
+    video.volume =
+      1;
+
+
+    connectingText.textContent =
+      "Creating a secure session…";
+
+
+    /*
+     * Get secure Anam token.
+     */
+
+    const sessionToken =
+      await createSession();
+
+
+    connectingText.textContent =
+      "Starting Aira…";
+
+
+    /*
+     * Create ANAM client.
+     */
+
+    anamClient =
+      createClient(
+        sessionToken
+      );
+
+
+    /*
+     * Stream avatar.
+     */
+
+    await anamClient
+      .streamToVideoElement(
+        "avatar-video"
+      );
+
+
+    /*
+     * Enable avatar audio.
+     */
+
+    await enableAvatarAudio();
+
+
+    /*
+     * Check media tracks.
+     */
+
+    debugMediaStream();
+
+
+    isConnected =
+      true;
+
+
+    isStarting =
+      false;
+
+
+    setConnectedUI();
+
+
+    console.log(
+      "Aira conversation started."
+    );
+
+
+    setTimeout(
+      () => {
+
+        video.muted =
+          false;
+
+
+        video.volume =
+          1;
+
+
+        debugMediaStream();
+
+      },
+      1500
+    );
+
+
+  } catch (
+    error
+  ) {
+
+
+    console.error(
+      "Aira start failed:",
+      error
+    );
+
+
+    isStarting =
+      false;
+
+
+    isConnected =
+      false;
+
+
+    try {
+
+      if (
+        anamClient
+      ) {
+
+        anamClient
+          .stopStreaming();
+
+      }
+
+    } catch (
+      cleanupError
+    ) {
+
+      console.warn(
+        "Cleanup error:",
+        cleanupError
+      );
+
+    }
+
+
+    anamClient =
+      null;
+
+
+    video.srcObject =
+      null;
+
+
+    let message =
+      "Unable to start Aira.";
+
+
+    if (
+      error &&
+      typeof error.message === "string"
+    ) {
+
+      message =
+        error.message;
+
+    }
+
+
+    if (
+      message
+        .toLowerCase()
+        .includes(
+          "microphone"
+        )
+    ) {
+
+      message =
+        "Microphone access is required. Please allow microphone access and try again.";
+
+    }
+
+
+    showError(
+      message
+    );
+
+
+    setTimeout(
+      () => {
+
+        setIdleUI();
+
+      },
+      100
+    );
+
+  }
+
+}
+
+
+/* ==================================================
+   STOP CONVERSATION
+=================================================== */
+
+async function stopConversation() {
+
+  if (
+    !anamClient
+  ) {
+
+    setIdleUI();
+
+    return;
+
+  }
+
+
+  startButton.disabled =
+    true;
+
+
+  stopButton.disabled =
+    true;
+
+
+  try {
+
+    anamClient
+      .stopStreaming();
+
+
+  } catch (
+    error
+  ) {
+
+
+    console.warn(
+      "Anam stop error:",
+      error
+    );
+
+  }
+
+
+  anamClient =
+    null;
+
+
+  isConnected =
+    false;
+
+
+  isStarting =
+    false;
+
+
+  try {
+
+    const stream =
+      video.srcObject;
+
+
+    if (
+      stream
+    ) {
+
+      stream
+        .getTracks()
+        .forEach(
+          track => {
+
+            track.stop();
+
+          }
+        );
+
+    }
+
+
+  } catch (
+    error
+  ) {
+
+
+    console.warn(
+      "Media cleanup error:",
+      error
+    );
+
+  }
+
+
+  video.pause();
+
+
+  video.srcObject =
+    null;
+
+
+  setIdleUI();
+
+
+  console.log(
+    "Aira conversation ended."
+  );
+
+}
+
+
+/* ==================================================
+   BUTTON EVENTS
+=================================================== */
+
+startButton.addEventListener(
+  "click",
+  startConversation
+);
+
+
+stopButton.addEventListener(
+  "click",
+  stopConversation
+);
+
+
+/* ==================================================
+   VIDEO EVENTS
+=================================================== */
+
+video.addEventListener(
+  "playing",
+  () => {
+
+    console.log(
+      "Aira avatar video playing."
+    );
+
+  }
+);
+
+
+video.addEventListener(
+  "volumechange",
+  () => {
+
+    console.log(
+      "Aira volume:",
+      video.volume,
+      "Muted:",
+      video.muted
+    );
+
+  }
+);
+
+
+video.addEventListener(
+  "loadedmetadata",
+  () => {
+
+    video.muted =
+      false;
+
+
+    video.volume =
+      1;
+
+  }
+);
+
+
+/* ==================================================
+   CLEANUP
+=================================================== */
+
+window.addEventListener(
+  "beforeunload",
+  () => {
+
+    try {
+
+      if (
+        anamClient
+      ) {
+
+        anamClient
+          .stopStreaming();
+
+      }
+
+    } catch {
+
+      /* Ignore cleanup error */
+
+    }
+
+  }
+);
+
+
+/* ==================================================
+   INITIALIZE
+=================================================== */
+
+setIdleUI();
+
+
+console.log(
+  "Aira initialized."
+);
+
+
+console.log(
+  "Avatar:",
+  AVATAR_ID
+);
+
+
+console.log(
+  "ElevenLabs Agent:",
+  AGENT_ID
+);
+
+</script>
 
 
 </body>
