@@ -1,101 +1,502 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
 
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
-  />
+  >
 
-  <title>Aira - Cabin Crew Avatar Agent</title>
+  <title>Aira | Virtual Cabin Crew</title>
 
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
     }
 
     body {
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        linear-gradient(
+          135deg,
+          #f5f7fa 0%,
+          #eef2f7 100%
+        );
+      overflow: hidden;
+    }
+
+    /* ===============================
+       MAIN APP
+    =============================== */
+
+    .app {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===============================
+       HEADER
+    =============================== */
+
+    .header {
+      height: 82px;
+      background: rgba(255,255,255,0.96);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      border-bottom: 1px solid #e5e7eb;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #e21b22;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .brand-text h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .brand-text p {
+      margin-top: 3px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #4b5563;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    /* ===============================
+       CONTENT
+    =============================== */
+
+    .content {
+      flex: 1;
+      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 25px;
+      min-height: 0;
     }
 
-    .container {
-      width: 90%;
-      max-width: 900px;
+    /* ===============================
+       AVATAR STAGE
+    =============================== */
+
+    .avatar-stage {
+      position: relative;
+      width: min(900px, 95vw);
+      height: min(680px, calc(100vh - 140px));
+      border-radius: 28px;
+      overflow: hidden;
+      background:
+        radial-gradient(
+          circle at center,
+          #ffffff 0%,
+          #eef2f7 70%,
+          #e5e7eb 100%
+        );
+
+      box-shadow:
+        0 25px 70px rgba(0,0,0,0.12);
+    }
+
+    /* ===============================
+       AVATAR PROVIDER CONTAINER
+    =============================== */
+
+    #avatar-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #avatar-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    /* Placeholder until avatar SDK is connected */
+
+    .avatar-placeholder {
       text-align: center;
-      background: white;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      padding: 30px;
     }
 
-    h1 {
+    .avatar-circle {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      margin: 0 auto 25px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          #ffffff,
+          #dfe5ec
+        );
+
+      box-shadow:
+        0 15px 40px rgba(0,0,0,0.12);
+
+      font-size: 70px;
+    }
+
+    .avatar-placeholder h2 {
+      color: #111827;
+      font-size: 30px;
       margin-bottom: 10px;
     }
 
-    .subtitle {
-      margin-bottom: 30px;
-      color: #555;
+    .avatar-placeholder p {
+      color: #6b7280;
+      font-size: 15px;
+      line-height: 1.6;
     }
 
-    .avatar-container {
-      width: 100%;
-      min-height: 400px;
-      background: #eef1f5;
+    /* ===============================
+       NAME CARD
+    =============================== */
+
+    .name-card {
+      position: absolute;
+      left: 25px;
+      bottom: 25px;
+
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+
       border-radius: 16px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 25px;
+      padding: 14px 20px;
+
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.12);
+
+      z-index: 5;
     }
 
-    .avatar-placeholder {
-      color: #777;
+    .name-card h2 {
+      font-size: 20px;
+      color: #111827;
     }
+
+    .name-card p {
+      margin-top: 3px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    /* ===============================
+       ELEVENLABS
+    =============================== */
+
+    elevenlabs-convai {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 9999;
+    }
+
+    /* ===============================
+       MOBILE
+    =============================== */
+
+    @media (max-width: 700px) {
+
+      .header {
+        height: 72px;
+        padding: 0 18px;
+      }
+
+      .brand-text h1 {
+        font-size: 18px;
+      }
+
+      .brand-text p {
+        font-size: 11px;
+      }
+
+      .status {
+        display: none;
+      }
+
+      .content {
+        padding: 12px;
+      }
+
+      .avatar-stage {
+        width: 100%;
+        height: calc(100vh - 100px);
+        border-radius: 20px;
+      }
+
+      .name-card {
+        left: 15px;
+        bottom: 15px;
+      }
+
+      elevenlabs-convai {
+        right: 12px;
+        bottom: 12px;
+      }
+    }
+
   </style>
 </head>
 
+
 <body>
 
-  <main class="container">
+  <div class="app">
 
-    <h1>Aira</h1>
+    <!-- ==================================
+         HEADER
+    =================================== -->
 
-    <p class="subtitle">
-      AirAsia Virtual Cabin Crew
-    </p>
+    <header class="header">
 
-    <!-- Avatar area -->
-    <div
-      id="avatar-container"
-      class="avatar-container"
-      data-avatar-id="1f8f6a1f-9608-4ba3-a335-9d22ec4a36c7"
-    >
-      <p class="avatar-placeholder">
-        Avatar will appear here once the Avatar API/SDK is connected.
-      </p>
-    </div>
+      <div class="brand">
 
-    <!-- ElevenLabs Conversational AI Agent -->
-    <elevenlabs-convai
-      agent-id="agent_4901kvey5tfhf0ab5xw9x5f3n5g7">
-    </elevenlabs-convai>
+        <div class="logo">
+          A
+        </div>
 
-  </main>
+        <div class="brand-text">
 
-  <!-- ElevenLabs Widget -->
+          <h1>Aira</h1>
+
+          <p>
+            AirAsia Virtual Cabin Crew
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="status">
+
+        <div class="status-dot"></div>
+
+        Ready to assist
+
+      </div>
+
+    </header>
+
+
+    <!-- ==================================
+         AVATAR
+    =================================== -->
+
+    <main class="content">
+
+      <section
+        class="avatar-stage"
+        id="avatar-stage"
+      >
+
+        <div
+          id="avatar-container"
+          data-avatar-id="1f8f6a1f-9608-4ba3-a335-9d22ec4a36c7"
+        >
+
+          <!--
+              LIVE AVATAR VIDEO
+
+              Your avatar provider SDK should
+              attach its MediaStream here.
+          -->
+
+          <video
+            id="avatar-video"
+            autoplay
+            playsinline
+          ></video>
+
+
+          <!-- Temporary display -->
+
+          <div
+            class="avatar-placeholder"
+            id="avatar-placeholder"
+          >
+
+            <div class="avatar-circle">
+              👩‍✈️
+            </div>
+
+            <h2>Aira</h2>
+
+            <p>
+              Your Virtual Cabin Crew
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="name-card">
+
+          <h2>Aira</h2>
+
+          <p>
+            Virtual Cabin Crew
+          </p>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- ==================================
+       ELEVENLABS CONVERSATIONAL AI
+  =================================== -->
+
+  <elevenlabs-convai
+    agent-id="agent_4901kvey5tfhf0ab5xw9x5f3n5g7">
+  </elevenlabs-convai>
+
+
   <script
     src="https://unpkg.com/@elevenlabs/convai-widget-embed"
     async
     type="text/javascript">
   </script>
+
+
+  <!-- ==================================
+       AVATAR CONFIGURATION
+  =================================== -->
+
+  <script>
+
+    /*
+     * AIRA AVATAR CONFIG
+     *
+     * Do NOT put private API keys here.
+     */
+
+    const AVATAR_ID =
+      "1f8f6a1f-9608-4ba3-a335-9d22ec4a36c7";
+
+    const ELEVENLABS_AGENT_ID =
+      "agent_4901kvey5tfhf0ab5xw9x5f3n5g7";
+
+
+    console.log(
+      "Aira Avatar ID:",
+      AVATAR_ID
+    );
+
+    console.log(
+      "ElevenLabs Agent:",
+      ELEVENLABS_AGENT_ID
+    );
+
+
+    /*
+     * ===================================
+     * LIVE AVATAR CONNECTION
+     * ===================================
+     *
+     * The avatar provider's SDK/API
+     * needs to be connected here.
+     *
+     * Example:
+     *
+     * const session =
+     *   await avatarSDK.createSession({
+     *       avatarId: AVATAR_ID
+     *   });
+     *
+     * document
+     *   .getElementById("avatar-video")
+     *   .srcObject = session.stream;
+     *
+     */
+
+
+    function showAvatarVideo(stream) {
+
+      const video =
+        document.getElementById(
+          "avatar-video"
+        );
+
+      const placeholder =
+        document.getElementById(
+          "avatar-placeholder"
+        );
+
+      video.srcObject = stream;
+
+      video.style.display =
+        "block";
+
+      placeholder.style.display =
+        "none";
+
+    }
+
+  </script>
+
 
 </body>
 </html>
