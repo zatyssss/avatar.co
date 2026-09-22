@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
+
+  <title>AvatarX — AI Assistant</title>
+
+  <meta
+    name="description"
+    content="AvatarX real-time AI voice assistant powered by Anam and ElevenLabs."
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f7f8fc;
+      --card: rgba(255, 255, 255, 0.86);
+      --card-solid: #ffffff;
+      --text: #17181c;
+      --muted: #70747d;
+      --border: rgba(0, 0, 0, 0.08);
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+      --accent: #111111;
+      --success: #16834b;
+      --danger: #c63636;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    body {
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      color: var(--text);
+
+      background:
+        radial-gradient(
+          circle at 20% 10%,
+          rgba(220, 225, 255, 0.55),
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at 85% 20%,
+          rgba(240, 220, 255, 0.42),
+          transparent 32%
+        ),
+        var(--bg);
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    /* =========================
+       HEADER
+    ========================== */
+
+    .topbar {
+      height: 56px;
+      flex-shrink: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 24px;
+
+      z-index: 100;
+
+      background: rgba(247, 248, 252, 0.78);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 10px;
+
+      color: white;
+      background: #111;
+
+      font-size: 15px;
+      font-weight: 800;
+
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      color: #74777e;
+
+      padding: 3px 8px;
+
+      border-radius: 999px;
+
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .top-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+
+      border-radius: 50%;
+
+      background: #b8bbc1;
+
+      transition: 0.25s ease;
+    }
+
+    .status-dot.connected {
+      background: var(--success);
+
+      box-shadow:
+        0 0 0 4px rgba(22, 131, 75, 0.12);
+    }
+
+    .status-dot.connecting {
+      background: #d58b20;
+      animation: pulse 1.2s infinite;
+    }
+
+    .status-dot.error {
+      background: var(--danger);
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.35;
+      }
+    }
+
+    /* =========================
+       MAIN LAYOUT
+    ========================== */
+
+    .page {
+      flex: 1;
+
+      width: 100%;
+      max-width: 1080px;
+
+      margin: 0 auto;
+
+      padding: 12px 20px 16px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      min-height: 0;
+    }
+
+    .hero {
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .hero h1 {
+      margin: 0 0 2px;
+
+      font-size: clamp(22px, 3.2vw, 36px);
+      line-height: 1.1;
+
+      letter-spacing: -0.04em;
+
+      font-weight: 750;
+    }
+
+    .hero p {
+      margin: 0;
+
+      color: var(--muted);
+
+      font-size: 13px;
+    }
+
+    /* =========================
+       ASSISTANT CARD
+    ========================== */
+
+    .assistant-shell {
+      position: relative;
+
+      flex: 1;
+
+      width: 100%;
+      min-height: 0;
+
+      padding: 6px;
+
+      border-radius: 24px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.95),
+          rgba(255, 255, 255, 0.68)
+        );
+
+      border: 1px solid rgba(255, 255, 255, 0.9);
+
+      box-shadow: var(--shadow);
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    .assistant {
+      position: relative;
+
+      flex: 1;
+
+      width: 100%;
+      min-height: 0;
+
+      overflow: hidden;
+
+      border-radius: 18px;
+
+      background:
+        radial-gradient(
+          circle at 50% 30%,
+          #ffffff,
+          #f0f2f6 58%,
+          #e8ebf1 100%
+        );
+    }
+
+    .avatar-stage {
+      position: relative;
+
+      width: 100%;
+      height: 100%;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* =========================
+       ANAM VIDEO
+    ========================== */
+
+    #avatar-video {
+      position: absolute;
+
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+
+      background: transparent;
+
+      opacity: 0;
+
+      transition:
+        opacity 0.5s ease,
+        transform 0.5s ease;
+
+      transform: scale(1.01);
+    }
+
+    #avatar-video.active {
+      opacity: 1;
+    }
+
+    /* =========================
+       IDLE STATE
+    ========================== */
+
+    .idle-state {
+      position: absolute;
+
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 20px;
+
+      text-align: center;
+
+      transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease;
+    }
+
+    .idle-state.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .idle-inner {
+      max-width: 380px;
+    }
+
+    .idle-icon {
+      width: 56px;
+      height: 56px;
+
+      margin: 0 auto 12px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 18px;
+
+      background: #111;
+
+      color: white;
+
+      font-size: 22px;
+
+      box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.14);
+    }
+
+    .idle-inner h2 {
+      margin: 0 0 6px;
+
+      font-size: 20px;
+
+      letter-spacing: -0.03em;
+    }
+
+    .idle-inner p {
+      margin: 0;
+
+      color: var(--muted);
+
+      line-height: 1.5;
+
+      font-size: 13px;
+    }
+
+    /* =========================
+       CONNECTING STATE
+    ========================== */
+
+    .connecting-state {
+      position: absolute;
+
+      inset: 0;
+
+      display: none;
+
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+
+      z-index: 10;
+
+      background:
+        rgba(247, 248, 252, 0.82);
+
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .connecting-state.visible {
+      display: flex;
+    }
+
+    .loader {
+      width: 38px;
+      height: 38px;
+
+      margin: 0 auto 12px;
+
+      border-radius: 50%;
+
+      border:
+        3px solid rgba(0, 0, 0, 0.08);
+
+      border-top-color: #111;
+
+      animation: spin 0.85s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .connecting-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .connecting-text {
+      margin-top: 4px;
+
+      color: var(--muted);
+
+      font-size: 12px;
+    }
+
+    /* =========================
+       CONTROLS
+    ========================== */
+
+    .control-bar {
+      position: absolute;
+
+      left: 50%;
+      bottom: 16px;
+
+      transform: translateX(-50%);
+
+      z-index: 30;
+
+      display: flex;
+      align-items: center;
+
+      gap: 8px;
+
+      padding: 6px;
+
+      border-radius: 16px;
+
+      background:
+        rgba(255, 255, 255, 0.88);
+
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+
+      border:
+        1px solid rgba(255, 255, 255, 0.9);
+
+      box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .btn {
+      height: 38px;
+
+      padding: 0 16px;
+
+      border: 0;
+
+      border-radius: 11px;
+
+      cursor: pointer;
+
+      font-weight: 650;
+      font-size: 13px;
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+
+      opacity: 0.45;
+
+      transform: none;
+    }
+
+    .btn-start {
+      background: #111;
+      color: white;
+
+      box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-stop {
+      background: #f1f2f4;
+      color: #25262a;
+    }
+
+    .mic-status {
+      display: none;
+
+      align-items: center;
+
+      gap: 6px;
+
+      padding: 0 8px;
+
+      color: #62666e;
+
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .mic-status.visible {
+      display: flex;
+    }
+
+    .mic-wave {
+      display: flex;
+      align-items: center;
+
+      gap: 2px;
+
+      height: 16px;
+    }
+
+    .mic-wave span {
+      width: 3px;
+      height: 6px;
+
+      border-radius: 4px;
+
+      background: #222;
+
+      animation:
+        wave 0.8s ease-in-out infinite;
+    }
+
+    .mic-wave span:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .mic-wave span:nth-child(3) {
+      animation-delay: 0.2s;
+    }
+
+    .mic-wave span:nth-child(4) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes wave {
+      0%,
+      100% {
+        height: 4px;
+      }
+
+      50% {
+        height: 14px;
+      }
+    }
+
+    /* =========================
+       ERROR
+    ========================== */
+
+    .error-box {
+      display: none;
+
+      position: absolute;
+
+      left: 50%;
+      top: 16px;
+
+      transform: translateX(-50%);
+
+      width:
+        min(calc(100% - 32px), 540px);
+
+      z-index: 40;
+
+      padding: 10px 14px;
+
+      border-radius: 12px;
+
+      color: #8e2424;
+
+      background:
+        rgba(255, 244, 244, 0.96);
+
+      border:
+        1px solid rgba(198, 54, 54, 0.15);
+
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.08);
+
+      font-size: 12px;
+
+      line-height: 1.4;
+    }
+
+    .error-box.visible {
+      display: block;
+    }
+
+    /* =========================
+       INFO GRID
+    ========================== */
+
+    .info-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 10px;
+
+      flex-shrink: 0;
+    }
+
+    .info-card {
+      padding: 10px 12px;
+
+      border-radius: 14px;
+
+      background:
+        rgba(255, 255, 255, 0.67);
+
+      border:
+        1px solid var(--border);
+
+      color: #676b73;
+
+      font-size: 11px;
+
+      line-height: 1.4;
+    }
+
+    .info-card strong {
+      display: block;
+
+      margin-bottom: 2px;
+
+      color: #25262a;
+
+      font-size: 12px;
+    }
+
+    /* =========================
+       FOOTER
+    ========================== */
+
+    footer {
+      flex-shrink: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      color: #888c94;
+
+      font-size: 11px;
+
+      padding-top: 2px;
+    }
+
+    .secure {
+      display: flex;
+
+      align-items: center;
+
+      gap: 5px;
+    }
+
+    .secure-icon {
+      width: 14px;
+      height: 14px;
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 4px;
+
+      background:
+        rgba(22, 131, 75, 0.1);
+
+      color: var(--success);
+
+      font-size: 9px;
+    }
+
+    /* =========================
+       MOBILE
+    ========================== */
+
+    @media (max-width: 700px) {
+      .topbar {
+        height: 48px;
+        padding: 0 16px;
+      }
+
+      .brand-badge {
+        display: none;
+      }
+
+      .page {
+        padding: 10px 12px 12px;
+        gap: 8px;
+      }
+
+      .control-bar {
+        width: calc(100% - 24px);
+
+        justify-content: center;
+
+        bottom: 12px;
+      }
+
+      .btn {
+        flex: 1;
+
+        padding: 0 8px;
+      }
+
+      .mic-status {
+        display: none !important;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+
+        gap: 6px;
+      }
+
+      .info-card {
+        padding: 6px 10px;
+      }
+
+      footer {
+        flex-direction: row;
+
+        justify-content: space-between;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration:
+          0.01ms !important;
+
+        animation-iteration-count:
+          1 !important;
+
+        scroll-behavior:
+          auto !important;
+
+        transition-duration:
+          0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+
+  <header class="topbar">
+
+    <div class="brand">
+      <div class="brand-mark">A</div>
+
+      <div class="brand-name">
+        AvatarX
+      </div>
+
+      <div class="brand-badge">
+        AI Assistant
+      </div>
+    </div>
+
+    <div class="top-status">
+
+      <span
+        id="statusDot"
+        class="status-dot">
+      </span>
+
+      <span id="statusText">
+        Ready
+      </span>
+
+    </div>
+
+  </header>
+
+  <!-- =========================
+       MAIN
+  ========================== -->
+
+  <main class="page">
+
+    <section class="hero">
+
+      <h1>
+        Hi there! How can I help you today?
+      </h1>
+
+      <p>
+        Speak with our AI assistant.
+      </p>
+
+    </section>
+
+    <!-- =========================
+         ASSISTANT STAGE
+    ========================== -->
+
+    <section class="assistant-shell">
+
+      <div class="assistant">
+
+        <div class="avatar-stage">
+
+          <!--
+            IMPORTANT:
+            DO NOT add muted="false".
+            "muted" is a boolean HTML attribute.
+          -->
+
+          <video
+            id="avatar-video"
+            autoplay
+            playsinline>
+          </video>
+
+          <!-- IDLE STATE -->
+
+          <div
+            id="idleState"
+            class="idle-state">
+
+            <div class="idle-inner">
+
+              <div class="idle-icon">
+                ✦
+              </div>
+
+              <h2>
+                Your assistant is ready
+              </h2>
+
+              <p>
+                Click
+                <strong>Start Conversation</strong>
+                and allow microphone access when requested.
+              </p>
+
+            </div>
+
+          </div>
+
+          <!-- CONNECTING STATE -->
+
+          <div
+            id="connectingState"
+            class="connecting-state">
+
+            <div>
+
+              <div class="loader"></div>
+
+              <div class="connecting-title">
+                Connecting your assistant
+              </div>
+
+              <div
+                id="connectingText"
+                class="connecting-text">
+
+                Creating a secure session…
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ERROR -->
+
+          <div
+            id="errorBox"
+            class="error-box">
+          </div>
+
+          <!-- CONTROLS -->
+
+          <div class="control-bar">
+
+            <button
+              id="startButton"
+              class="btn btn-start"
+              type="button">
+
+              Start Conversation
+
+            </button>
+
+            <button
+              id="stopButton"
+              class="btn btn-stop"
+              type="button"
+              disabled>
+
+              End Conversation
+
+            </button>
+
+            <div
+              id="micStatus"
+              class="mic-status">
+
+              <div class="mic-wave">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+
+              Listening
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =========================
+         INFORMATION
+    ========================== -->
+
+    <section class="info-grid">
+
+      <div class="info-card">
+
+        <strong>
+          🎤 Voice interaction
+        </strong>
+
+        Speak naturally using your microphone.
+
+      </div>
+
+      <div class="info-card">
+
+        <strong>
+          👄 Live avatar
+        </strong>
+
+        Your avatar streams in real time.
+
+      </div>
+
+      <div class="info-card">
+
+        <strong>
+          🔐 Secure connection
+        </strong>
+
+        All credentials are secured.
+
+      </div>
+
+    </section>
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+      <div>
+        AvatarX
+      </div>
+
+      <div class="secure">
+
+        <div class="secure-icon">
+          ✓
+        </div>
+
+        Secure session architecture
+
+      </div>
+
+    </footer>
+
+  </main>
+
+  <!-- =========================
+       ANAM SDK + APPLICATION
+  ========================== -->
+
+  <script type="module">
+
+    import {
+      createClient
+    } from "https://esm.sh/@anam-ai/js-sdk@latest";
+
+
+    /* ========================================
+       CONFIGURATION
+    ======================================== */
+
+    const SESSION_ENDPOINT =
+      "https://cfthqsvxidzxflbvhxkk.supabase.co/functions/v1/anam-eleven-session";
+
+    const AVATAR_ID =
+      "0caf57ab-3da9-4d27-b356-53837508aaf6";
+
+    const AGENT_ID =
+      "agent_0301ky516eb3emwsy22td2f8z96g";
+
+
+    /* ========================================
+       STATE
+    ======================================== */
+
+    let anamClient = null;
+
+    let isStarting = false;
+
+    let isConnected = false;
+
+
+    /* ========================================
+       ELEMENTS
+    ======================================== */
+
+    const video =
+      document.getElementById(
+        "avatar-video"
+      );
+
+    const startButton =
+      document.getElementById(
+        "startButton"
+      );
+
+    const stopButton =
+      document.getElementById(
+        "stopButton"
+      );
+
+    const idleState =
+      document.getElementById(
+        "idleState"
+      );
+
+    const connectingState =
+      document.getElementById(
+        "connectingState"
+      );
+
+    const connectingText =
+      document.getElementById(
+        "connectingText"
+      );
+
+    const errorBox =
+      document.getElementById(
+        "errorBox"
+      );
+
+    const micStatus =
+      document.getElementById(
+        "micStatus"
+      );
+
+    const statusText =
+      document.getElementById(
+        "statusText"
+      );
+
+    const statusDot =
+      document.getElementById(
+        "statusDot"
+      );
+
+
+    /* ========================================
+       STATUS
+    ======================================== */
+
+    function setStatus(
+      text,
+      type = "idle"
+    ) {
+
+      statusText.textContent =
+        text;
+
+      statusDot.className =
+        "status-dot";
+
+      if (
+        type === "connected"
+      ) {
+
+        statusDot.classList.add(
+          "connected"
+        );
+
+      }
+
+      if (
+        type === "connecting"
+      ) {
+
+        statusDot.classList.add(
+          "connecting"
+        );
+
+      }
+
+      if (
+        type === "error"
+      ) {
+
+        statusDot.classList.add(
+          "error"
+        );
+
+      }
+
+    }
+
+
+    /* ========================================
+       ERROR HANDLING
+    ======================================== */
+
+    function showError(
+      message
+    ) {
+
+      console.error(
+        "AvatarX:",
+        message
+      );
+
+      errorBox.textContent =
+        message;
+
+      errorBox.classList.add(
+        "visible"
+      );
+
+      setStatus(
+        "Connection error",
+        "error"
+      );
+
+    }
+
+
+    function hideError() {
+
+      errorBox.textContent =
+        "";
+
+      errorBox.classList.remove(
+        "visible"
+      );
+
+    }
+
+
+    /* ========================================
+       UI STATES
+    ======================================== */
+
+    function setIdleUI() {
+
+      startButton.disabled =
+        false;
+
+      stopButton.disabled =
+        true;
+
+      idleState.classList.remove(
+        "hidden"
+      );
+
+      connectingState.classList.remove(
+        "visible"
+      );
+
+      micStatus.classList.remove(
+        "visible"
+      );
+
+      video.classList.remove(
+        "active"
+      );
+
+      setStatus(
+        "Ready",
+        "idle"
+      );
+
+    }
+
+
+    function setConnectingUI() {
+
+      startButton.disabled =
+        true;
+
+      stopButton.disabled =
+        true;
+
+      idleState.classList.add(
+        "hidden"
+      );
+
+      connectingState.classList.add(
+        "visible"
+      );
+
+      connectingText.textContent =
+        "Creating a secure session…";
+
+      setStatus(
+        "Connecting",
+        "connecting"
+      );
+
+    }
+
+
+    function setConnectedUI() {
+
+      startButton.disabled =
+        true;
+
+      stopButton.disabled =
+        false;
+
+      idleState.classList.add(
+        "hidden"
+      );
+
+      connectingState.classList.remove(
+        "visible"
+      );
+
+      video.classList.add(
+        "active"
+      );
+
+      micStatus.classList.add(
+        "visible"
+      );
+
+      setStatus(
+        "Connected",
+        "connected"
+      );
+
+    }
+
+
+    /* ========================================
+       AUDIO SETUP
+    ======================================== */
+
+    async function enableAvatarAudio() {
+
+      /*
+       * Critical audio fix.
+       *
+       * muted="false" has been removed
+       * from the HTML.
+       */
+
+      video.muted =
+        false;
+
+      video.defaultMuted =
+        false;
+
+      video.volume =
+        1.0;
+
+      try {
+
+        await video.play();
+
+        console.log(
+          "AvatarX audio/video playback enabled."
+        );
+
+      } catch (
+        playbackError
+      ) {
+
+        console.warn(
+          "Browser blocked initial media playback:",
+          playbackError
+        );
+
+        /*
+         * Because Start Conversation was
+         * initiated by a user click this should
+         * normally be allowed.
+         */
+
+        try {
+
+          video.muted =
+            false;
+
+          video.volume =
+            1;
+
+          await video.play();
+
+        } catch (
+          secondError
+        ) {
+
+          console.warn(
+            "Second playback attempt failed:",
+            secondError
+          );
+
+        }
+
+      }
+
+    }
+
+
+    /* ========================================
+       DEBUG MEDIA STREAM
+    ======================================== */
+
+    function debugMediaStream() {
+
+      const stream =
+        video.srcObject;
+
+      if (
+        !stream
+      ) {
+
+        console.warn(
+          "Avatar video has no MediaStream."
+        );
+
+        return;
+
+      }
+
+      const audioTracks =
+        stream.getAudioTracks();
+
+      const videoTracks =
+        stream.getVideoTracks();
+
+      console.log(
+        "AvatarX audio tracks:",
+        audioTracks
+      );
+
+      console.log(
+        "AvatarX video tracks:",
+        videoTracks
+      );
+
+      console.log(
+        "Audio track count:",
+        audioTracks.length
+      );
+
+      /*
+       * Ensure audio tracks are enabled.
+       */
+
+      audioTracks.forEach(
+        track => {
+
+          track.enabled =
+            true;
+
+          console.log(
+            "Audio track enabled:",
+            track.label
+          );
+
+        }
+      );
+
+    }
+
+
+    /* ========================================
+       CREATE SESSION
+    ======================================== */
+
+    async function createSession() {
+
+      const response =
+        await fetch(
+          SESSION_ENDPOINT,
+          {
+
+            method:
+              "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify(
+                {
+
+                  avatarId:
+                    AVATAR_ID,
+
+                  agentId:
+                    AGENT_ID
+
+                }
+              ),
+
+            cache:
+              "no-store"
+
+          }
+        );
+
+
+      let data = null;
+
+
+      try {
+
+        data =
+          await response.json();
+
+      } catch {
+
+        throw new Error(
+          `Supabase returned HTTP ${response.status}.`
+        );
+
+      }
+
+
+      if (
+        !response.ok
+      ) {
+
+        throw new Error(
+          data?.details ||
+          data?.error ||
+          `HTTP ${response.status}`
+        );
+
+      }
+
+
+      if (
+        !data?.success
+      ) {
+
+        throw new Error(
+          data?.error ||
+          "Unable to create avatar session."
+        );
+
+      }
+
+
+      if (
+        !data?.sessionToken
+      ) {
+
+        throw new Error(
+          "Supabase did not return an Anam session token."
+        );
+
+      }
+
+
+      return data.sessionToken;
+
+    }
+
+
+    /* ========================================
+       START CONVERSATION
+    ======================================== */
+
+    async function startConversation() {
+
+      if (
+        isStarting ||
+        isConnected
+      ) {
+
+        return;
+
+      }
+
+
+      isStarting =
+        true;
+
+
+      hideError();
+
+      setConnectingUI();
+
+
+      try {
+
+        /*
+         * User clicked the button.
+         * Unlock browser audio immediately.
+         */
+
+        video.muted =
+          false;
+
+        video.defaultMuted =
+          false;
+
+        video.volume =
+          1;
+
+
+        connectingText.textContent =
+          "Creating a secure session…";
+
+
+        /*
+         * Get secure Anam session token
+         * through Supabase.
+         */
+
+        const sessionToken =
+          await createSession();
+
+
+        connectingText.textContent =
+          "Starting your AI avatar…";
+
+
+        /*
+         * Create Anam client.
+         */
+
+        anamClient =
+          createClient(
+            sessionToken
+          );
+
+
+        /*
+         * Stream Anam avatar into
+         * the <video> element.
+         */
+
+        await anamClient
+          .streamToVideoElement(
+            "avatar-video"
+          );
+
+
+        /*
+         * CRITICAL:
+         * Explicitly enable speaker audio.
+         */
+
+        await enableAvatarAudio();
+
+
+        /*
+         * Check whether the stream contains
+         * an actual audio track.
+         */
+
+        debugMediaStream();
+
+
+        /*
+         * Connection successful.
+         */
+
+        isConnected =
+          true;
+
+        isStarting =
+          false;
+
+
+        setConnectedUI();
+
+
+        console.log(
+          "AvatarX conversation started."
+        );
+
+
+        console.log(
+          "Video muted:",
+          video.muted
+        );
+
+
+        console.log(
+          "Video volume:",
+          video.volume
+        );
+
+
+        /*
+         * Run another audio check shortly
+         * after WebRTC negotiation settles.
+         */
+
+        setTimeout(
+          () => {
+
+            video.muted =
+              false;
+
+            video.volume =
+              1;
+
+            debugMediaStream();
+
+          },
+          1500
+        );
+
+
+      } catch (
+        error
+      ) {
+
+        console.error(
+          "Start conversation failed:",
+          error
+        );
+
+
+        isStarting =
+          false;
+
+        isConnected =
+          false;
+
+
+        try {
+
+          if (
+            anamClient
+          ) {
+
+            anamClient
+              .stopStreaming();
+
+          }
+
+        } catch (
+          cleanupError
+        ) {
+
+          console.warn(
+            "Cleanup error:",
+            cleanupError
+          );
+
+        }
+
+
+        anamClient =
+          null;
+
+
+        video.srcObject =
+          null;
+
+
+        let message =
+          "Unable to start the conversation.";
+
+
+        if (
+          error &&
+          typeof error.message === "string"
+        ) {
+
+          message =
+            error.message;
+
+        }
+
+
+        if (
+          message
+            .toLowerCase()
+            .includes(
+              "microphone"
+            )
+        ) {
+
+          message =
+            "Microphone access is required. Please allow microphone access in your browser and try again.";
+
+        }
+
+
+        showError(
+          message
+        );
+
+
+        setTimeout(
+          () => {
+
+            setIdleUI();
+
+          },
+          100
+        );
+
+      }
+
+    }
+
+
+    /* ========================================
+       STOP CONVERSATION
+    ======================================== */
+
+    async function stopConversation() {
+
+      if (
+        !anamClient
+      ) {
+
+        setIdleUI();
+
+        return;
+
+      }
+
+
+      startButton.disabled =
+        true;
+
+      stopButton.disabled =
+        true;
+
+
+      try {
+
+        anamClient
+          .stopStreaming();
+
+      } catch (
+        error
+      ) {
+
+        console.warn(
+          "Anam stop error:",
+          error
+        );
+
+      }
+
+
+      anamClient =
+        null;
+
+      isConnected =
+        false;
+
+      isStarting =
+        false;
+
+
+      try {
+
+        const stream =
+          video.srcObject;
+
+
+        if (
+          stream
+        ) {
+
+          stream
+            .getTracks()
+            .forEach(
+              track => {
+
+                track.stop();
+
+              }
+            );
+
+        }
+
+      } catch (
+        error
+      ) {
+
+        console.warn(
+          "Media cleanup error:",
+          error
+        );
+
+      }
+
+
+      video.pause();
+
+      video.srcObject =
+        null;
+
+
+      setIdleUI();
+
+
+      console.log(
+        "AvatarX conversation ended."
+      );
+
+    }
+
+
+    /* ========================================
+       EVENT LISTENERS
+    ======================================== */
+
+    startButton.addEventListener(
+      "click",
+      startConversation
+    );
+
+
+    stopButton.addEventListener(
+      "click",
+      stopConversation
+    );
+
+
+    /*
+     * Helpful browser events for debugging.
+     */
+
+    video.addEventListener(
+      "playing",
+      () => {
+
+        console.log(
+          "Avatar video is playing."
+        );
+
+      }
+    );
+
+
+    video.addEventListener(
+      "volumechange",
+      () => {
+
+        console.log(
+          "Avatar volume:",
+          video.volume,
+          "Muted:",
+          video.muted
+        );
+
+      }
+    );
+
+
+    video.addEventListener(
+      "loadedmetadata",
+      () => {
+
+        console.log(
+          "Avatar media metadata loaded."
+        );
+
+        video.muted =
+          false;
+
+        video.volume =
+          1;
+
+      }
+    );
+
+
+    window.addEventListener(
+      "beforeunload",
+      () => {
+
+        try {
+
+          if (
+            anamClient
+          ) {
+
+            anamClient
+              .stopStreaming();
+
+          }
+
+        } catch {
+
+          // Ignore cleanup errors.
+
+        }
+
+      }
+    );
+
+
+    /* ========================================
+       INITIALIZE
+    ======================================== */
+
+    setIdleUI();
+
+
+    console.log(
+      "AvatarX initialized."
+    );
+
+  </script>
+
+</body>
+</html>
